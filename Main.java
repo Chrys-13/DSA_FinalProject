@@ -30,8 +30,8 @@ public class Main {
      * @param args Command-line arguments (not used in this application).
      */
     public static void main(String[] args) {
-        System.out.println("Welcome to the Super Awesome Event Manager 3000!");
-        System.out.println("We promise not to mess up your plans... probably.");
+        System.out.println("Hello, welcome to the Super Awesome Event Manager 3000!");
+        System.out.println("We promise not to mess up your plans... I mean, trying not to do so probably.");
 
         while (true) {
             displayMenu();
@@ -74,7 +74,7 @@ public class Main {
      * Displays the menu of options for the user.
      */
     private static void displayMenu() {
-        System.out.println("\nHere are your options:");
+        System.out.println("\nBelow, you will find several options:");
         System.out.println("1. Create Event");
         System.out.println("2. Modify Event");
         System.out.println("3. Delete Event");
@@ -83,20 +83,22 @@ public class Main {
         System.out.println("6. Sort Events");
         System.out.println("7. Generate Summary");
         System.out.println("8. Exit");
-        System.out.print("Please enter your choice (1-8): ");
+        System.out.print("Enter a number from (1-8) to make a choice: ");
     }
 
     /**
-     * Prompts the user to enter details for creating a new event and adds it to the list.
+     /**
+     * Prompting the user to enter details for creating a new event and adds it to the list.
      */
     private static void createEvent() {
-        System.out.println("Enter the event details in the format: Title Date Time Location Description");
-        System.out.println("Example: DSA Exams 2024-08-07 1:00pm RB 100");
+        System.out.println("Please enter the event details in the format: Title Date Time Location Description");
+        System.out.println("Example: \"Birthday Party 2024-08-15 18:00 Cocody Angre A fun birthday party\"");
+
         String details = scanner.nextLine().trim();
         String[] parts = details.split(" ", 5);
 
-        if (parts.length != 5) {
-            System.out.println("Oops! The input format seems off. Try again.");
+        if (parts.length < 5) {
+            System.out.println("Oops! The input format seems off. Make sure you provide Title, Date, Time, Location, and Description.");
             return;
         }
 
@@ -108,29 +110,30 @@ public class Main {
             String description = parts[4];
 
             if (date == null) {
-                System.out.println("Uh-oh! The date format is incorrect. Please use one of the supported formats.");
+                System.out.println("Uh-oh! The date format is incorrect. Please use one of the supported formats: yyyy-MM-dd, yyyy/M/d, yyyy-M-d, M/d/yyyy, M-d-yyyy, d/M/yyyy, or d-M-yyyy.");
                 return;
             }
 
             Event event = new Event(eventIdCounter++, title, date, time, location, description);
             events.push(event);
-            System.out.println("🎉 Event created successfully! " + event);
+            System.out.println("Bravo, 🎉 Your event has been created successfully! " + event);
         } catch (Exception e) {
             System.out.println("Uh-oh! Something went wrong. Please check your inputs and try again.");
         }
     }
 
+
     /**
      * Prompts the user to enter details for modifying an existing event.
      */
     private static void modifyEvent() {
-        System.out.println("Enter the event ID and the attribute to modify in the format: ID attribute newValue");
+        System.out.println("Please enter the event ID and the attribute to modify in the format: ID attribute newValue");
         System.out.println("Example: 1 date 2024-08-08");
         String details = scanner.nextLine().trim();
         String[] parts = details.split(" ", 3);
 
         if (parts.length != 3) {
-            System.out.println("Oops! The input format seems off. Try again.");
+            System.out.println("Oops! The input format seems off. Try one more time.");
             return;
         }
 
@@ -173,6 +176,8 @@ public class Main {
                 current = current.next;
             }
             System.out.println("Event with ID " + id + " not found.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID format. Please enter a valid number.");
         } catch (Exception e) {
             System.out.println("Oops! Something went wrong. Make sure the ID is a number and the date is in a valid format.");
         }
@@ -200,6 +205,7 @@ public class Main {
      */
     private static void deleteEvent() {
         System.out.println("Enter the event ID to delete:");
+        System.out.println("Example: 1");
         String id = scanner.nextLine().trim();
 
         try {
@@ -213,13 +219,15 @@ public class Main {
                     } else {
                         previous.next = current.next;
                     }
-                    System.out.println("🗑️ Event deleted successfully! " + current.data);
+                    System.out.println("🗑️ Please your event deleted successfully! " + current.data);
                     return;
                 }
                 previous = current;
                 current = current.next;
             }
             System.out.println("Event with ID " + eventId + " not found.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID format. Please enter a valid number.");
         } catch (Exception e) {
             System.out.println("Oops! Something went wrong. Make sure the ID is a number.");
         }
@@ -237,7 +245,8 @@ public class Main {
      * Prompts the user to enter search criteria and displays matching events.
      */
     private static void searchEvent() {
-        System.out.println("Enter the attribute to search by (title, date, location) and the value:");
+        System.out.println("Please enter the attribute to search by (title, date, location) and the value:");
+        System.out.println("Example: title Birthday Party");
         String details = scanner.nextLine().trim();
         String[] parts = details.split(" ", 2);
 
@@ -287,6 +296,7 @@ public class Main {
      */
     private static void sortEvents() {
         System.out.println("Enter the attribute to sort by (date, title) and optional '-' for descending order:");
+        System.out.println("Example: date or -title");
         String attribute = scanner.nextLine().trim();
         boolean reverse = false;
 
@@ -305,12 +315,13 @@ public class Main {
      */
     private static void generateSummary() {
         System.out.println("Enter a date range to generate a summary (e.g., YYYY-MM-DD to YYYY-MM-DD):");
+        System.out.println("Example: 2024-08-01 to 2024-08-31");
         String dateRange = scanner.nextLine().trim();
 
         try {
             // Example implementation, you can refine based on your needs
             System.out.println("Generating summary for: " + dateRange);
-            String summary = HuggingFaceAPI.generateSummary(dateRange);
+            String summary = HuggingFaceAPI.generateSummary(dateRange); // Replace with actual summary generation logic
             System.out.println("Summary generated: " + summary);
         } catch (Exception e) {
             System.out.println("Oops! There was an error generating the summary. Check your input or try again later.");
