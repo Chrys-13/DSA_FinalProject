@@ -1,154 +1,165 @@
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class SortingCalendar {
 
-    public static void main(String[] args) {
-        LinkedList events = new LinkedList();
-        events.push(new Event(1, "Meeting", LocalDate.of(2024, 7, 27), "10:00", "Room 101", "Project meeting"));
-        events.push(new Event(2, "Workshop", LocalDate.of(2024, 7, 26), "14:00", "Lab", "AI workshop"));
-        events.push(new Event(3, "Conference", LocalDate.of(2024, 7, 28), "09:00", "Main Hall", "Tech conference"));
+    private static final LinkedList events = new LinkedList();
+    private static int eventIdCounter = 1;
 
-        // Sort by priority
-        System.out.println("Sorted by priority:");
-        events.sort("priority", false);
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Enter command:");
+            String command = scanner.nextLine();
+            String[] parts = command.split(" ", 2);
+            String action = parts[0];
+
+            switch (action) {
+                case "create_event":
+                    createEvent(parts[1]);
+                    break;
+                case "modify_event":
+                    modifyEvent(parts[1]);
+                    break;
+                case "delete_event":
+                    deleteEvent(parts[1]);
+                    break;
+                case "view_events":
+                    viewEvents(parts[1]);
+                    break;
+                case "search_event":
+                    searchEvent(parts[1]);
+                    break;
+                case "sort_events":
+                    sortEvents(parts[1]);
+                    break;
+                case "generate_summary":
+                    generateSummary(parts[1]);
+                    break;
+                default:
+                    System.out.println("Unknown command.");
+            }
+        }
+    }
+
+    private static void createEvent(String details) {
+        String[] parts = details.split(" ", 5);
+        String title = parts[0];
+        LocalDate date = LocalDate.parse(parts[1]);
+        String time = parts[2];
+        String location = parts[3];
+        String description = parts[4];
+        Event event = new Event(eventIdCounter++, title, date, time, location, description);
+        events.push(event);
+        System.out.println("Event created: " + event);
+    }
+
+    private static void modifyEvent(String details) {
+        String[] parts = details.split(" ", 3);
+        int id = Integer.parseInt(parts[0]);
+        String attribute = parts[1];
+        String newValue = parts[2];
+        Node current = events.head;
+        while (current != null) {
+            if (current.data.id == id) {
+                switch (attribute) {
+                    case "title":
+                        current.data.title = newValue;
+                        break;
+                    case "date":
+                        current.data.date = LocalDate.parse(newValue);
+                        break;
+                    case "time":
+                        current.data.time = newValue;
+                        break;
+                    case "location":
+                        current.data.location = newValue;
+                        break;
+                    case "description":
+                        current.data.description = newValue;
+                        break;
+                    default:
+                        System.out.println("Unknown attribute.");
+                        return;
+                }
+                System.out.println("Event modified: " + current.data);
+                return;
+            }
+            current = current.next;
+        }
+        System.out.println("Event not found.");
+    }
+
+    private static void deleteEvent(String id) {
+        int eventId = Integer.parseInt(id);
+        Node current = events.head;
+        Node previous = null;
+        while (current != null) {
+            if (current.data.id == eventId) {
+                if (previous == null) {
+                    events.head = current.next;
+                } else {
+                    previous.next = current.next;
+                }
+                System.out.println("Event deleted: " + current.data);
+                return;
+            }
+            previous = current;
+            current = current.next;
+        }
+        System.out.println("Event not found.");
+    }
+
+    private static void viewEvents(String filter) {
+        // Implement filtering logic (e.g., by date or month)
         events.printList();
     }
-}
 
-
-
-class Event {
-    int id;
-    String title;
-    LocalDate date;
-    String time;
-    String location;
-    String description;
-
-    public Event(int id, String title, LocalDate date, String time, String location, String description) {
-        this.id = id;
-        this.title = title;
-        this.date = date;
-        this.time = time;
-        this.location = location;
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", date=" + date +
-                ", time='" + time + '\'' +
-                ", location='" + location + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
-}
-
-class Node {
-    Event data;
-    Node next;
-
-    public Node(Event data) {
-        this.data = data;
-        this.next = null;
-    }
-}
-
-class LinkedList {
-    Node head;
-
-    public void push(Event data) {
-        Node newNode = new Node(data);
-        newNode.next = head;
-        head = newNode;
-    }
-
-    public void printList() {
-        Node current = head;
+    private static void searchEvent(String details) {
+        String[] parts = details.split(" ", 2);
+        String attribute = parts[0];
+        String value = parts[1];
+        Node current = events.head;
         while (current != null) {
-            System.out.println(current.data);
+            switch (
+
+                    attribute) {
+                case "title":
+                    if (current.data.title.equalsIgnoreCase(value)) {
+                        System.out.println(current.data);
+                    }
+                    break;
+                case "date":
+                    if (current.data.date.toString().equals(value)) {
+                        System.out.println(current.data);
+                    }
+                    break;
+                case "location":
+                    if (current.data.location.equalsIgnoreCase(value)) {
+                        System.out.println(current.data);
+                    }
+                    break;
+                default:
+                    System.out.println("Unknown attribute.");
+            }
             current = current.next;
         }
     }
 
-    private Node sortedMerge(Node a, Node b, String attribute, boolean reverse) {
-        if (a == null) return b;
-        if (b == null) return a;
-
-        Node result;
-        int comparison;
-        if ("priority".equals(attribute)) {
-            comparison = compareByPriority(a.data, b.data);
-        } else {
-            comparison = compareByAttribute(a.data, b.data, attribute);
+    private static void sortEvents(String attribute) {
+        boolean reverse = false;
+        if (attribute.startsWith("-")) {
+            attribute = attribute.substring(1);
+            reverse = true;
         }
-
-        if (reverse) {
-            comparison = -comparison;
-        }
-
-        if (comparison <= 0) {
-            result = a;
-            result.next = sortedMerge(a.next, b, attribute, reverse);
-        } else {
-            result = b;
-            result.next = sortedMerge(a, b.next, attribute, reverse);
-        }
-        return result;
+        events.sort(attribute, reverse);
+        events.printList();
     }
 
-    private int compareByAttribute(Event a, Event b, String attribute) {
-        switch (attribute) {
-            case "date":
-                return a.date.compareTo(b.date);
-            case "title":
-                return a.title.compareTo(b.title);
-            // Add other cases as necessary
-            default:
-                return a.date.compareTo(b.date); // Default to date comparison
-        }
-    }
-
-    private int compareByPriority(Event a, Event b) {
-        LocalDate now = LocalDate.now();
-        int dateComparison = a.date.compareTo(b.date);
-        if (dateComparison != 0) {
-            return dateComparison;
-        } else {
-            return a.title.compareTo(b.title);
-        }
-    }
-
-    private Node getMiddle(Node head) {
-        if (head == null) return head;
-
-        Node slow = head;
-        Node fast = head.next;
-
-        while (fast != null && fast.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
-        }
-        return slow;
-    }
-
-    private Node mergeSort(Node h, String attribute, boolean reverse) {
-        if (h == null || h.next == null) return h;
-
-        Node middle = getMiddle(h);
-        Node nextToMiddle = middle.next;
-        middle.next = null;
-
-        Node left = mergeSort(h, attribute, reverse);
-        Node right = mergeSort(nextToMiddle, attribute, reverse);
-
-        return sortedMerge(left, right, attribute, reverse);
-    }
-
-    public void sort(String attribute, boolean reverse) {
-        head = mergeSort(head, attribute, reverse);
+    private static void generateSummary(String dateRange) {
+        // Implement summary generation logic
+        // Example: generate summary for the given date range
+        System.out.println("Summary for date range: " + dateRange);
     }
 }

@@ -1,4 +1,3 @@
-package DSA_FinalProject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -6,7 +5,6 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class HuggingFaceAPI {
-
     private static final String API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
     private static final String API_TOKEN = "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";
 
@@ -33,15 +31,5 @@ public class HuggingFaceAPI {
         conn.disconnect();
 
         return response;
-    }
-
-    public static void main(String[] args) {
-        try {
-            String eventDetails = "This is a sample event description. It contains details about the event, including date, time, and location.";
-            String summary = generateSummary(eventDetails);
-            System.out.println("Generated Summary: " + summary);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
